@@ -22,11 +22,11 @@ export default function Home() {
     const newId = Date.now().toString();
     const name = `Residence ${newId}`;
 
-    const newItem = {
+    const newItem: DesignItem = {
       id: newId,
       name,
       sourceImage: base64Image,
-      renderImage: undefined,
+      renderedImage: undefined,
       timestamp: Date.now(),
     };
 
@@ -37,7 +37,7 @@ export default function Home() {
       return false;
     }
 
-    setProjects((prev) => [newItem, ...prev]);
+    setProjects((prev) => [saved, ...prev]);
 
     navigate(`/visualizer/${newId}`, {
       state: {
