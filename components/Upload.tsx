@@ -1,5 +1,5 @@
 import { CheckCircle, CheckCircle2, ImageIcon, UploadIcon } from "lucide-react";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useOutletContext } from "react-router";
 import {
   PROGRESS_INCREMENT,
@@ -18,24 +18,47 @@ const Upload: React.FC<UploadProps> = ({ onComplete }) => {
 
   const { isSignedIn } = useOutletContext<AuthContext>();
 
+  const intervalIdRef = useRef<NodeJS.Timeout | null>(null);
+  const timeoutIdRef = useRef<NodeJS.Timeout | null>(null);
+  const mountedRef = useRef(true);
+
+  useEffect(() => {
+    return () => {
+      mountedRef.current = false;
+      if (intervalIdRef.current) {
+        clearInterval(intervalIdRef.current);
+      }
+      if (timeoutIdRef.current) {
+        clearTimeout(timeoutIdRef.current);
+      }
+    };
+  }, []);
+
   const processFile = (files: FileList | null) => {
     if (!files || files.length === 0 || !isSignedIn) return;
     const selectedFile = files[0];
+
     setFile(selectedFile);
+
     const reader = new FileReader();
+    reader.onerror = () => {
+      setFile(null);
+      setProgress(0);
+    };
+
     reader.onload = () => {
       const base64 = reader.result as string;
       let currentProgress = 0;
-      const interval = setInterval(() => {
-        console.log(progress);
+      intervalIdRef.current = setInterval(() => {
         currentProgress += PROGRESS_INCREMENT;
-        setProgress(currentProgress);
-
         if (currentProgress >= 100) {
-          clearInterval(interval);
-          setTimeout(() => {
+          if (mountedRef.current) setProgress(100);
+          if (intervalIdRef.current) clearInterval(intervalIdRef.current);
+          timeoutIdRef.current = setTimeout(() => {
             onComplete(base64);
           }, REDIRECT_DELAY_MS);
+        } else {
+          if (mountedRef.current) setProgress(currentProgress);
         }
       }, PROGRESS_INTERVAL_MS);
     };
