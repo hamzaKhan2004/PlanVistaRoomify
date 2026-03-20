@@ -295,7 +295,7 @@
     }
 
     .content {
-      @apply w-full max-w-6xl grid grid-cols-1 gap-6;
+      @apply w-full max-w-4xl  grid grid-cols-1 gap-6;
     }
 
     .panel {
