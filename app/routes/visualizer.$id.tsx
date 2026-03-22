@@ -4,6 +4,10 @@ import { createProject, getProjectById } from "lib/puter.action";
 import { Box, Download, RefreshCcw, Share2, X } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import {
+  ReactCompareSlider,
+  ReactCompareSliderImage,
+} from "react-compare-slider";
+import {
   useLocation,
   useNavigate,
   useOutletContext,
@@ -62,6 +66,17 @@ const VisualizerId = () => {
     } finally {
       setIsProcessing(false);
     }
+  };
+
+  const handleExport = () => {
+    if (!currentImage) return;
+
+    const link = document.createElement("a");
+    link.href = currentImage;
+    link.download = "rendered_image.png";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   useEffect(() => {
@@ -135,7 +150,7 @@ const VisualizerId = () => {
               <Button
                 className="export"
                 size="sm"
-                onClick={() => {}}
+                onClick={handleExport}
                 disabled={!currentImage}
               >
                 <Download className="w-4 h-4 mr-2" />
@@ -170,6 +185,47 @@ const VisualizerId = () => {
                     Generating your 3D visualization
                   </span>
                 </div>
+              </div>
+            )}
+          </div>
+        </div>
+        <div className="panel compare">
+          <div className="panel-header">
+            <div className="panel-meta">
+              <p>Comparison</p>
+              <h3>Before and After</h3>
+            </div>
+            <div className="hint">Drag to compare</div>
+          </div>
+          <div className="compare-stage">
+            {project?.sourceImage && currentImage ? (
+              <ReactCompareSlider
+                defaultValue={50}
+                style={{ width: "100%", height: "auto" }}
+                itemOne={
+                  <ReactCompareSliderImage
+                    src={project?.sourceImage ?? undefined}
+                    alt="before"
+                    className="compare-img"
+                  />
+                }
+                itemTwo={
+                  <ReactCompareSliderImage
+                    src={currentImage ?? project?.renderedImage ?? undefined}
+                    alt="after"
+                    className="compare-img"
+                  />
+                }
+              />
+            ) : (
+              <div className="compare-fallback">
+                {project?.sourceImage && (
+                  <img
+                    src={project.sourceImage}
+                    alt="Before"
+                    className="compare-img"
+                  />
+                )}
               </div>
             )}
           </div>
