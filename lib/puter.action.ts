@@ -79,7 +79,7 @@ export const createProject = async ({
 
   try {
     const response = await puter.workers.exec(
-      `${PUTER_WORKER_URL}api/projects/save`,
+      `${PUTER_WORKER_URL}/api/projects/save`,
       {
         method: "POST",
         body: JSON.stringify({
@@ -111,7 +111,7 @@ export const getProjects = async () => {
 
   try {
     const response = await puter.workers.exec(
-      `${PUTER_WORKER_URL}api/projects/list`,
+      `${PUTER_WORKER_URL}/api/projects/list`,
       { method: "GET" },
     );
 
@@ -139,7 +139,7 @@ export const getProjectById = async ({ id }: { id: string }) => {
 
   try {
     const response = await puter.workers.exec(
-      `${PUTER_WORKER_URL}api/projects/get?id=${encodeURIComponent(id)}`,
+      `${PUTER_WORKER_URL}/api/projects/get?id=${encodeURIComponent(id)}`,
       { method: "GET" },
     );
 
